@@ -1,0 +1,40 @@
+"use strict";
+
+export const elements = {
+  authScreen: document.querySelector("#authScreen"),
+  vaultScreen: document.querySelector("#vaultScreen"),
+  authForm: document.querySelector("#authForm"),
+  authTitle: document.querySelector("#authTitle"),
+  authDescription: document.querySelector("#authDescription"),
+  authSubmitButton: document.querySelector("#authSubmitButton"),
+  authError: document.querySelector("#authError"),
+  masterPassword: document.querySelector("#masterPassword"),
+  confirmPassword: document.querySelector("#confirmPassword"),
+  confirmPasswordField: document.querySelector("#confirmPasswordField"),
+
+  lockButton: document.querySelector("#lockButton"),
+  searchInput: document.querySelector("#searchInput"),
+  addProjectButton: document.querySelector("#addProjectButton"),
+  projectFilters: document.querySelector("#projectFilters"),
+  projectScroll: document.querySelector("#projectScroll"),
+  projectList: document.querySelector("#projectList"),
+  emptyState: document.querySelector("#emptyState"),
+
+  projectDialog: document.querySelector("#projectDialog"),
+  projectForm: document.querySelector("#projectForm"),
+  projectDialogTitle: document.querySelector("#projectDialogTitle"),
+  projectId: document.querySelector("#projectId"),
+  projectName: document.querySelector("#projectName"),
+
+  credentialDialog: document.querySelector("#credentialDialog"),
+  credentialForm: document.querySelector("#credentialForm"),
+  credentialDialogTitle: document.querySelector("#credentialDialogTitle"),
+  credentialProjectId: document.querySelector("#credentialProjectId"),
+  credentialId: document.querySelector("#credentialId"),
+  credentialRole: document.querySelector("#credentialRole"),
+  credentialLogin: document.querySelector("#credentialLogin"),
+  credentialPassword: document.querySelector("#credentialPassword"),
+  credentialUrl: document.querySelector("#credentialUrl"),
+  credentialNotes: document.querySelector("#credentialNotes"),
+  togglePasswordButton: document.querySelector("#togglePasswordButton"),
+};

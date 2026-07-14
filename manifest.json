@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Local Credential Vault",
+  "description": "Локальное зашифрованное хранилище тестовых credentials",
+  "version": "1.0.0",
+  "permissions": ["storage"],
+  "action": {
+    "default_title": "Credential Vault",
+    "default_popup": "popup.html"
+  }
+}

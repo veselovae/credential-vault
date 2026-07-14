@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Credential Vault</title>
+
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+
+  <body>
+    <main class="app">
+      <header class="header">
+        <div>
+          <h1>Credential Vault</h1>
+          <p>Локальное зашифрованное хранилище</p>
+        </div>
+
+        <button
+          id="lockButton"
+          class="button button-secondary hidden"
+          type="button"
+        >
+          Заблокировать
+        </button>
+      </header>
+
+      <section id="authScreen" class="panel">
+        <h2 id="authTitle">Открыть хранилище</h2>
+
+        <p id="authDescription" class="muted">Введите мастер-пароль.</p>
+
+        <form id="authForm">
+          <label class="field">
+            <span>Мастер-пароль</span>
+
+            <input
+              id="masterPassword"
+              type="password"
+              minlength="12"
+              autocomplete="current-password"
+              required
+            />
+          </label>
+
+          <label id="confirmPasswordField" class="field hidden">
+            <span>Повторите мастер-пароль</span>
+
+            <input
+              id="confirmPassword"
+              type="password"
+              minlength="12"
+              autocomplete="new-password"
+            />
+          </label>
+
+          <button
+            id="authSubmitButton"
+            class="button button-primary"
+            type="submit"
+          >
+            Разблокировать
+          </button>
+
+          <p id="authError" class="error hidden"></p>
+        </form>
+      </section>
+
+      <section id="vaultScreen" class="hidden">
+        <div class="toolbar">
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="Поиск по проектам, ролям и логинам"
+          />
+
+          <button
+            id="addProjectButton"
+            class="button button-primary"
+            type="button"
+          >
+            Добавить проект
+          </button>
+        </div>
+
+        <div
+          id="projectFilters"
+          class="project-filters"
+          aria-label="Фильтр по проектам"
+        ></div>
+
+        <div id="projectScroll" class="project-scroll">
+          <div id="projectList" class="project-list"></div>
+
+          <div id="emptyState" class="empty-state hidden">
+            <h2>Пока нет проектов</h2>
+            <p>Создайте первый проект и добавьте credentials.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="projectDialog">
+      <form id="projectForm" method="dialog">
+        <div class="dialog-header">
+          <h2 id="projectDialogTitle">Новый проект</h2>
+
+          <button
+            class="icon-button"
+            type="button"
+            data-close-dialog="projectDialog"
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+        </div>
+
+        <input id="projectId" type="hidden" />
+
+        <label class="field">
+          <span>Название проекта</span>
+
+          <input id="projectName" type="text" maxlength="100" required />
+        </label>
+
+        <div class="dialog-actions">
+          <button
+            class="button button-secondary"
+            type="button"
+            data-close-dialog="projectDialog"
+          >
+            Отмена
+          </button>
+
+          <button class="button button-primary" type="submit">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="credentialDialog">
+      <form id="credentialForm" method="dialog">
+        <div class="dialog-header">
+          <h2 id="credentialDialogTitle">Новые credentials</h2>
+
+          <button
+            class="icon-button"
+            type="button"
+            data-close-dialog="credentialDialog"
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+        </div>
+
+        <input id="credentialProjectId" type="hidden" />
+        <input id="credentialId" type="hidden" />
+
+        <label class="field">
+          <span>Роль</span>
+
+          <input
+            id="credentialRole"
+            type="text"
+            maxlength="100"
+            placeholder="Например: Administrator"
+            required
+          />
+        </label>
+
+        <label class="field">
+          <span>Логин</span>
+
+          <input
+            id="credentialLogin"
+            type="text"
+            maxlength="300"
+            autocomplete="off"
+            required
+          />
+        </label>
+
+        <label class="field">
+          <span>Пароль</span>
+
+          <div class="input-row">
+            <input
+              id="credentialPassword"
+              type="password"
+              maxlength="1000"
+              autocomplete="new-password"
+              required
+            />
+
+            <button
+              id="togglePasswordButton"
+              class="button button-secondary icon-action-button"
+              type="button"
+            >
+              Показать
+            </button>
+          </div>
+        </label>
+
+        <label class="field">
+          <span>URL</span>
+
+          <input
+            id="credentialUrl"
+            type="url"
+            maxlength="1000"
+            placeholder="https://example.com"
+          />
+        </label>
+
+        <label class="field">
+          <span>Заметки</span>
+
+          <textarea id="credentialNotes" maxlength="3000" rows="4"></textarea>
+        </label>
+
+        <div class="dialog-actions">
+          <button
+            class="button button-secondary"
+            type="button"
+            data-close-dialog="credentialDialog"
+          >
+            Отмена
+          </button>
+
+          <button class="button button-primary" type="submit">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

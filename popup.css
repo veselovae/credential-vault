@@ -1,0 +1,434 @@
+:root {
+  color-scheme: light dark;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  --background: #f4f5f7;
+  --surface: #ffffff;
+  --surface-secondary: #f7f7f8;
+  --text: #1d1d1f;
+  --muted: #6b7280;
+  --border: #d9dce1;
+  --primary: #315efb;
+  --primary-hover: #244bd5;
+  --danger: #c62828;
+  --danger-background: #fff0f0;
+  --popup-height: 600px;
+  --scrollbar-thumb: #aeb4c0;
+  --scrollbar-thumb-hover: #8f96a3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 580px;
+  height: var(--popup-height);
+  margin: 0;
+  background: var(--background);
+  overflow: hidden;
+}
+
+body {
+  min-height: 500px;
+  color: var(--text);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  padding: 18px;
+  background: var(--background);
+}
+
+#vaultScreen {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.project-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-width: thin;
+}
+
+.project-scroll::-webkit-scrollbar,
+dialog form::-webkit-scrollbar,
+textarea::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.project-scroll::-webkit-scrollbar-track,
+dialog form::-webkit-scrollbar-track,
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.project-scroll::-webkit-scrollbar-thumb,
+dialog form::-webkit-scrollbar-thumb,
+textarea::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--scrollbar-thumb);
+}
+
+.project-scroll::-webkit-scrollbar-thumb:hover,
+dialog form::-webkit-scrollbar-thumb:hover,
+textarea::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+.header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.header p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.panel,
+.project-card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.error {
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--danger-background);
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.field span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--primary);
+}
+
+textarea {
+  resize: vertical;
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.input-row input {
+  flex: 1;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.button-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.button-primary:hover {
+  background: var(--primary-hover);
+}
+
+.button-secondary {
+  border: 1px solid var(--border);
+  background: var(--surface-secondary);
+  color: var(--text);
+}
+
+.button-danger {
+  border: 1px solid #f1b7b7;
+  background: var(--danger-background);
+  color: var(--danger);
+}
+
+.toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.toolbar input {
+  flex: 1;
+}
+
+.project-filters {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.project-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-chip {
+  flex: 0 0 auto;
+  max-width: 180px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-chip-active {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+}
+
+.project-list {
+  display: grid;
+  gap: 12px;
+}
+
+.project-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.project-header h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.project-actions,
+.credential-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.credentials-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.credential-card {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-secondary);
+}
+
+.credential-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.credential-title h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.credential-value {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.credential-value dt {
+  color: var(--muted);
+}
+
+.credential-value dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.password-value {
+  font-family: monospace;
+}
+
+.notes {
+  white-space: pre-wrap;
+}
+
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+dialog {
+  width: min(520px, calc(100vw - 30px));
+  max-height: calc(100vh - 40px);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 45%);
+}
+
+dialog form {
+  max-height: calc(100vh - 42px);
+  overflow-y: auto;
+  padding: 18px;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-width: thin;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.dialog-header h2 {
+  margin: 0;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.icon-button {
+  padding: 4px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 25px;
+}
+
+.small-button {
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+.icon-action-button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+}
+
+.input-row .icon-action-button {
+  width: 42px;
+  height: auto;
+  flex: 0 0 42px;
+}
+
+.button-icon {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+}
+
+.button-secondary .button-icon {
+  filter: brightness(0) saturate(100%) invert(11%) sepia(8%) saturate(530%)
+    hue-rotate(202deg) brightness(94%) contrast(91%);
+}
+
+.button-danger .button-icon {
+  filter: brightness(0) saturate(100%) invert(20%) sepia(70%) saturate(2888%)
+    hue-rotate(345deg) brightness(81%) contrast(88%);
+}
+
+a {
+  color: var(--primary);
+}
