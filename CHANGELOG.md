@@ -8,15 +8,19 @@ The format is based on Keep a Changelog, and this project uses semantic versioni
 
 ### Added
 
-- Nothing yet.
+- Added JSON import and export for projects and credentials.
+- Added validation and merge behavior for imported data; existing credential records are not overwritten.
+- Added a full vault reset flow with explicit confirmation for users who forget their master password.
 
 ### Changed
 
-- Nothing yet.
+- Rewrote the README in Russian with installation, usage, backup, and security guidance.
+- Updated the authentication screen to show the vault reset action beside the unlock button.
 
-### Fixed
+### Security
 
-- Nothing yet.
+- Exported JSON files contain credentials in plaintext; users are warned to protect these files.
+- Documented that forgotten master passwords cannot be recovered and that resetting permanently deletes the vault.
 
 ## [1.0.0] - 2026-07-14
 
