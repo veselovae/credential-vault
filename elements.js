@@ -8,6 +8,7 @@ export const elements = {
   authDescription: document.querySelector("#authDescription"),
   authSubmitButton: document.querySelector("#authSubmitButton"),
   authError: document.querySelector("#authError"),
+  resetVaultButton: document.querySelector("#resetVaultButton"),
   masterPassword: document.querySelector("#masterPassword"),
   confirmPassword: document.querySelector("#confirmPassword"),
   confirmPasswordField: document.querySelector("#confirmPasswordField"),

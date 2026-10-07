@@ -8,6 +8,7 @@ import {
   clearSessionKey,
   createVault,
   loadEncryptedContainer,
+  resetVault,
   saveVault,
   tryRestoreSession,
   unlockVault,
@@ -40,6 +41,7 @@ async function lockVault() {
     "Введите мастер-пароль. До перезапуска Chrome повторный ввод не потребуется.";
 
   elements.authSubmitButton.textContent = "Разблокировать";
+  elements.resetVaultButton.classList.remove("hidden");
 
   elements.confirmPasswordField.classList.add("hidden");
   elements.confirmPassword.required = false;
@@ -777,6 +779,48 @@ elements.authForm.addEventListener("submit", async (event) => {
   }
 });
 
+elements.resetVaultButton.addEventListener("click", async () => {
+  const confirmation = window.prompt(
+    "Полный сброс необратимо удалит все проекты и credentials из этого хранилища. " +
+      "Восстановить доступ к нему без мастер-пароля нельзя. " +
+      "Если у вас есть резервный JSON-файл, после сброса создайте новое хранилище " +
+      "и импортируйте его. Файл экспорта не зашифрован и хранится на вашей ответственности.\n\n" +
+      "Для подтверждения введите СБРОС:",
+  );
+
+  if (confirmation !== "СБРОС") {
+    return;
+  }
+
+  elements.resetVaultButton.disabled = true;
+
+  try {
+    await resetVault();
+
+    elements.masterPassword.value = "";
+    elements.confirmPassword.value = "";
+    elements.authTitle.textContent = "Создать хранилище";
+    elements.authDescription.textContent =
+      "Забытый мастер-пароль восстановить нельзя: он не хранится. " +
+      "Если пароль будет утерян, доступ к этому хранилищу можно вернуть только полным сбросом, " +
+      "который удалит все данные. Перед добавлением credentials сделайте экспорт резервной копии. " +
+      "Экспорт содержит пароли в открытом виде — храните его в безопасном месте. " +
+      "После сброса создайте новое хранилище и импортируйте сохраненный JSON-файл.";
+    elements.authSubmitButton.textContent = "Создать хранилище";
+    elements.confirmPasswordField.classList.remove("hidden");
+    elements.confirmPassword.required = true;
+    elements.resetVaultButton.classList.add("hidden");
+    showAuthScreen();
+  } catch (error) {
+    console.error("Vault reset error:", error);
+    showAuthError(
+      "Не удалось выполнить сброс хранилища. Проверьте разрешения расширения и повторите попытку.",
+    );
+  } finally {
+    elements.resetVaultButton.disabled = false;
+  }
+});
+
 /**
  * Project submit.
  */
@@ -957,6 +1001,7 @@ async function initialize() {
         "Введите мастер-пароль. До перезапуска Chrome повторный ввод не потребуется.";
 
       elements.authSubmitButton.textContent = "Разблокировать";
+      elements.resetVaultButton.classList.remove("hidden");
 
       elements.confirmPasswordField.classList.add("hidden");
       elements.confirmPassword.required = false;
@@ -964,9 +1009,14 @@ async function initialize() {
       elements.authTitle.textContent = "Создать хранилище";
 
       elements.authDescription.textContent =
-        "Придумайте мастер-пароль. Восстановить его будет невозможно.";
+        "Забытый мастер-пароль восстановить нельзя: он не хранится. " +
+        "Если пароль будет утерян, доступ к этому хранилищу можно вернуть только полным сбросом, " +
+        "который удалит все данные. Перед добавлением credentials сделайте экспорт резервной копии. " +
+        "Экспорт содержит пароли в открытом виде — храните его в безопасном месте. " +
+        "После сброса создайте новое хранилище и импортируйте сохраненный JSON-файл.";
 
       elements.authSubmitButton.textContent = "Создать хранилище";
+      elements.resetVaultButton.classList.add("hidden");
 
       elements.confirmPasswordField.classList.remove("hidden");
       elements.confirmPassword.required = true;

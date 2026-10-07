@@ -223,6 +223,13 @@ textarea {
   color: var(--danger);
 }
 
+.auth-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .toolbar {
   flex: 0 0 auto;
   display: flex;

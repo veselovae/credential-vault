@@ -1,6 +1,11 @@
 "use strict";
 
-import { PBKDF2_ITERATIONS, SESSION_KEY, STORAGE_KEY } from "./constants.js";
+import {
+  PBKDF2_ITERATIONS,
+  SESSION_KEY,
+  STORAGE_KEY,
+  UI_STATE_KEY,
+} from "./constants.js";
 import { state } from "./state.js";
 import {
   base64ToBytes,
@@ -62,6 +67,20 @@ async function loadSessionKey() {
  */
 export async function clearSessionKey() {
   await chrome.storage.session.remove(SESSION_KEY);
+}
+
+/**
+ * Удаляет vault, ключ сессии и сохраненное состояние интерфейса.
+ */
+export async function resetVault() {
+  await clearSessionKey();
+  await chrome.storage.local.remove([STORAGE_KEY, UI_STATE_KEY]);
+
+  state.projects = [];
+  state.encryptionKey = null;
+  state.initialized = false;
+  state.activeProjectId = null;
+  state.pendingProjectScrollTop = 0;
 }
 
 /**

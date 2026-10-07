@@ -56,15 +56,25 @@
             />
           </label>
 
-          <button
-            id="authSubmitButton"
-            class="button button-primary"
-            type="submit"
-          >
-            Разблокировать
-          </button>
-
           <p id="authError" class="error hidden"></p>
+
+          <div class="auth-actions">
+            <button
+              id="authSubmitButton"
+              class="button button-primary"
+              type="submit"
+            >
+              Разблокировать
+            </button>
+
+            <button
+              id="resetVaultButton"
+              class="button button-danger hidden"
+              type="button"
+            >
+              Полный сброс хранилища
+            </button>
+          </div>
         </form>
       </section>
 

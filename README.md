@@ -1,73 +1,87 @@
-# Local Credential Vault
+# Credential Vault
 
-Local Credential Vault is a Chrome extension for storing project credentials locally in an encrypted vault. It is designed as a small popup app: unlock the vault with a master password, filter projects, and copy logins or passwords when needed.
+Локальное хранилище учётных данных по проектам в виде расширения Chrome. Данные в хранилище шифруются мастер-паролем; приложение работает в браузере и не использует собственный сервер.
 
-## Features
+> **Важно:** это проект для личного использования и портфолио, а не сертифицированный менеджер паролей. Перед сохранением важных данных ознакомьтесь с разделом [Безопасность и резервные копии](#безопасность-и-резервные-копии).
 
-- Local encrypted credential storage in `chrome.storage.local`
-- Master-password based encryption with PBKDF2 and AES-GCM
-- Session unlock through `chrome.storage.session`
-- Projects with multiple credential records
-- Search by project, role, login, URL, and notes
-- Project filter chips with saved selected filter
-- Saved scroll position in the credential list
-- Copy buttons for login, password, and URL
-- Password reveal toggle
-- Import and export projects and credentials as versioned JSON
+## Возможности
 
-## Import and Export
+- Создание хранилища и разблокировка мастер-паролем длиной не менее 12 символов.
+- Проекты с несколькими записями: роль, логин, пароль, адрес сайта и заметки.
+- Шифрование содержимого с помощью AES-GCM; ключ выводится из мастер-пароля через PBKDF2.
+- Автоматическое повторное открытие хранилища в течение текущей сессии Chrome.
+- Поиск по проектам и учётным данным, фильтр по проектам.
+- Копирование логина, пароля и адреса сайта; возможность показать пароль.
+- Экспорт всех проектов и учётных данных в JSON и импорт файла того же формата.
+- Полный сброс заблокированного хранилища с подтверждением.
 
-The popup can export all projects and credentials to a versioned JSON file and
-import that same format into an unlocked vault. Exports contain passwords,
-logins, URLs, and notes in **plaintext**; protect the file and delete it securely
-when it is no longer needed.
+## Установка
 
-Imports validate the file before saving and merge records into the current vault.
-Existing projects are matched by ID or name, and credentials with matching IDs
-are left unchanged rather than overwritten. Importing the same file again does
-not add duplicate records.
+Сборка и установка зависимостей не требуются.
 
-## Security Notes
+1. Скачайте репозиторий: нажмите **Code → Download ZIP** на GitHub и распакуйте архив либо клонируйте репозиторий.
+2. Откройте `chrome://extensions` в Chrome.
+3. Включите **Режим разработчика**.
+4. Нажмите **Загрузить распакованное расширение** и выберите папку проекта.
+5. Откройте расширение через значок на панели Chrome.
 
-The master password is not stored. It is used to derive an encryption key, and the key is saved only in Chrome session storage while the browser session is active.
+После изменений в коде нажмите кнопку перезагрузки расширения на странице `chrome://extensions`.
 
-If the master password is forgotten, the encrypted vault cannot be recovered. This project currently does not include a built-in vault reset flow.
+## Начало работы
 
-## Project Structure
+1. При первом запуске задайте мастер-пароль не короче 12 символов и подтвердите его.
+2. Создавайте проекты и добавляйте в них записи учётных данных.
+3. Регулярно экспортируйте хранилище и сохраняйте резервную копию в безопасном месте.
 
-- `manifest.json` - Chrome extension manifest
-- `popup.html` - popup markup
-- `popup.css` - popup styles
-- `popup.js` - main popup flow, rendering, dialogs, and event handlers
-- `constants.js` - storage keys and crypto constants
-- `state.js` - shared runtime state
-- `elements.js` - DOM element references
-- `dom.js` - DOM helpers for buttons, icons, and text elements
-- `crypto-utils.js` - base64 helpers, key derivation, encryption, and decryption
-- `vault-storage.js` - encrypted vault and session key storage logic
-- `ui-state.js` - saved filter and scroll state
-- `icons/` - action icons used in the popup
+Мастер-пароль нельзя восстановить или сбросить с сохранением данных. Если забыть пароль, единственный встроенный вариант — удалить хранилище и создать новое. После этого можно импортировать заранее сохранённый JSON-файл.
 
-## Development
+### Экспорт и импорт
 
-No build step is required. The popup uses native ES modules:
+**Экспорт** сохраняет все проекты и учётные данные в JSON-файл. Файл содержит логины, пароли, адреса сайтов и заметки **в открытом виде** и не защищён мастер-паролем.
 
-```html
-<script type="module" src="popup.js"></script>
-```
+**Импорт** принимает JSON, созданный функцией экспорта этого приложения. Перед сохранением проверяется формат файла. Данные добавляются к текущему хранилищу; совпадающие проекты сопоставляются по идентификатору или названию, записи с совпадающим идентификатором не перезаписываются. Повторный импорт того же файла не добавляет записи-дубликаты.
 
-To load the extension locally:
+За хранение, ограничение доступа и безопасное удаление экспортных файлов отвечает пользователь. Не отправляйте их через незащищённые каналы и не оставляйте в общедоступных папках.
 
-1. Open `chrome://extensions`
-2. Enable Developer mode
-3. Click Load unpacked
-4. Select this project directory
+### Полный сброс
 
-After changing files, reload the extension from `chrome://extensions`.
+На экране ввода мастер-пароля нажмите **Полный сброс хранилища** и введите `СБРОС` для подтверждения. Будут удалены зашифрованное хранилище, ключ текущей сессии и сохранённое состояние интерфейса. Сброс не восстанавливает и не экспортирует данные автоматически.
 
-## Validation
+Чтобы вернуть данные после сброса, сначала создайте новое хранилище с новым мастер-паролем, разблокируйте его, затем импортируйте ранее сохранённый JSON-файл.
 
-You can run a quick syntax check for the JavaScript files with Node:
+## Безопасность и резервные копии
+
+- Мастер-пароль не сохраняется. Если он утерян, расшифровать существующее хранилище через расширение нельзя.
+- Содержимое хранилища сохраняется локально в `chrome.storage.local` в зашифрованном виде. Ключ для текущей сессии хранится в `chrome.storage.session`.
+- Файл экспорта не зашифрован. Любой, кто получит его, сможет прочитать сохранённые учётные данные.
+- Полный сброс необратимо удаляет текущее хранилище. Восстановление возможно только из предварительно сохранённого экспорта.
+- Экспортируйте резервные копии регулярно и после важных изменений; проверяйте, что файл доступен и хранится безопасно.
+
+Не рассматривайте это расширение как замену проверенному менеджеру паролей для критически важных учётных записей.
+
+## Технологии
+
+- Chrome Extension Manifest V3
+- JavaScript и нативные ES-модули
+- Web Crypto API: PBKDF2 и AES-GCM
+- Chrome Storage API
+
+## Структура проекта
+
+| Файл или папка | Назначение |
+| --- | --- |
+| `manifest.json` | Манифест расширения Chrome |
+| `popup.html`, `popup.css` | Разметка и стили интерфейса |
+| `popup.js` | Логика интерфейса и обработка действий |
+| `vault-storage.js` | Работа с зашифрованным хранилищем и ключом сессии |
+| `crypto-utils.js` | Получение ключа, шифрование и расшифрование |
+| `constants.js`, `state.js`, `elements.js` | Константы, состояние и ссылки на элементы интерфейса |
+| `ui-state.js`, `dom.js` | Состояние интерфейса и DOM-помощники |
+| `icons/` | Иконки расширения |
+
+## Проверка синтаксиса
+
+Для быстрой проверки JavaScript-файлов нужен установленный Node.js:
 
 ```powershell
 node --check popup.js
