@@ -13,6 +13,19 @@ Local Credential Vault is a Chrome extension for storing project credentials loc
 - Saved scroll position in the credential list
 - Copy buttons for login, password, and URL
 - Password reveal toggle
+- Import and export projects and credentials as versioned JSON
+
+## Import and Export
+
+The popup can export all projects and credentials to a versioned JSON file and
+import that same format into an unlocked vault. Exports contain passwords,
+logins, URLs, and notes in **plaintext**; protect the file and delete it securely
+when it is no longer needed.
+
+Imports validate the file before saving and merge records into the current vault.
+Existing projects are matched by ID or name, and credentials with matching IDs
+are left unchanged rather than overwritten. Importing the same file again does
+not add duplicate records.
 
 ## Security Notes
 

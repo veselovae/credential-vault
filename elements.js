@@ -14,6 +14,9 @@ export const elements = {
 
   lockButton: document.querySelector("#lockButton"),
   searchInput: document.querySelector("#searchInput"),
+  importCredentialsButton: document.querySelector("#importCredentialsButton"),
+  exportCredentialsButton: document.querySelector("#exportCredentialsButton"),
+  importCredentialsFile: document.querySelector("#importCredentialsFile"),
   addProjectButton: document.querySelector("#addProjectButton"),
   projectFilters: document.querySelector("#projectFilters"),
   projectScroll: document.querySelector("#projectScroll"),

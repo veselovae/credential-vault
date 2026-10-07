@@ -14,6 +14,8 @@ import {
 } from "./vault-storage.js";
 
 const saveUiStateDebounced = debounce(saveUiState, 150);
+const EXPORT_FORMAT = "credential-vault-export";
+const MAX_IMPORT_FILE_SIZE = 10 * 1024 * 1024;
 
 /**
  * Блокирует vault и возвращает пользователя на экран ввода пароля.
@@ -430,6 +432,195 @@ async function copyToClipboard(value) {
 }
 
 /**
+ * Экспортирует все проекты и credentials в JSON без шифрования.
+ */
+function exportCredentials() {
+  const confirmed = window.confirm(
+    "Экспорт содержит все логины, пароли и заметки в открытом виде. " +
+      "Храните полученный JSON-файл в безопасном месте. Продолжить?",
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const exportData = {
+    format: EXPORT_FORMAT,
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    projects: state.projects,
+  };
+  const file = new Blob([JSON.stringify(exportData, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = `credential-vault-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/**
+ * Проверяет структуру JSON-файла экспорта до изменения текущего vault.
+ */
+function validateCredentialImport(data) {
+  const isString = (value, maxLength) =>
+    typeof value === "string" && value.length <= maxLength;
+
+  if (
+    !data ||
+    data.format !== EXPORT_FORMAT ||
+    data.version !== 1 ||
+    !Array.isArray(data.projects)
+  ) {
+    throw new Error("Файл не является экспортом Credential Vault версии 1");
+  }
+
+  for (const project of data.projects) {
+    if (
+      !project ||
+      !isString(project.id, 100) ||
+      !isString(project.name, 100) ||
+      !project.name.trim() ||
+      !Array.isArray(project.credentials)
+    ) {
+      throw new Error("В файле обнаружен проект с некорректным форматом");
+    }
+
+    for (const credential of project.credentials) {
+      if (
+        !credential ||
+        !isString(credential.id, 100) ||
+        !isString(credential.role, 100) ||
+        !credential.role.trim() ||
+        !isString(credential.login, 300) ||
+        !credential.login.trim() ||
+        !isString(credential.password, 1000) ||
+        !credential.password ||
+        !isString(credential.url ?? "", 1000) ||
+        !isString(credential.notes ?? "", 3000)
+      ) {
+        throw new Error("В файле обнаружена credential-запись с некорректным форматом");
+      }
+    }
+  }
+
+  return data.projects;
+}
+
+/**
+ * Объединяет импортированные данные с текущими, не перезаписывая совпадения.
+ */
+function mergeImportedProjects(currentProjects, importedProjects) {
+  const projects = currentProjects.map((project) => ({
+    ...project,
+    credentials: project.credentials.map((credential) => ({ ...credential })),
+  }));
+  let addedProjects = 0;
+  let addedCredentials = 0;
+  let skippedCredentials = 0;
+
+  for (const importedProject of importedProjects) {
+    const normalizedName = importedProject.name.trim().toLocaleLowerCase("ru");
+    let project = projects.find((item) => item.id === importedProject.id);
+
+    if (!project) {
+      project = projects.find(
+        (item) =>
+          item.name.trim().toLocaleLowerCase("ru") === normalizedName,
+      );
+    }
+
+    if (!project) {
+      project = {
+        id: importedProject.id,
+        name: importedProject.name,
+        credentials: [],
+      };
+      projects.push(project);
+      addedProjects += 1;
+    }
+
+    for (const importedCredential of importedProject.credentials) {
+      const isDuplicate = project.credentials.some(
+        (credential) => credential.id === importedCredential.id,
+      );
+
+      if (isDuplicate) {
+        skippedCredentials += 1;
+        continue;
+      }
+
+      project.credentials.push({
+        id: importedCredential.id,
+        role: importedCredential.role,
+        login: importedCredential.login,
+        password: importedCredential.password,
+        url: importedCredential.url ?? "",
+        notes: importedCredential.notes ?? "",
+      });
+      addedCredentials += 1;
+    }
+  }
+
+  return { projects, addedProjects, addedCredentials, skippedCredentials };
+}
+
+/**
+ * Импортирует JSON, объединяя данные с текущими без перезаписи совпадений.
+ */
+async function importCredentials(file) {
+  if (!file) {
+    return;
+  }
+
+  if (file.size > MAX_IMPORT_FILE_SIZE) {
+    throw new Error("Размер файла импорта не должен превышать 10 МБ");
+  }
+
+  const importedProjects = validateCredentialImport(
+    JSON.parse(await file.text()),
+  );
+  const mergeResult = mergeImportedProjects(state.projects, importedProjects);
+
+  if (mergeResult.addedCredentials === 0 && mergeResult.addedProjects === 0) {
+    window.alert("Новых проектов и credentials не найдено.");
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `Добавить проектов: ${mergeResult.addedProjects}; ` +
+      `credentials: ${mergeResult.addedCredentials}. ` +
+      `Совпадений, которые останутся без изменений: ${mergeResult.skippedCredentials}. ` +
+      "Продолжить?",
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const previousProjects = state.projects;
+  state.projects = mergeResult.projects;
+
+  try {
+    await saveVault();
+  } catch (error) {
+    state.projects = previousProjects;
+    throw error;
+  }
+
+  renderProjects();
+  window.alert(
+    `Импортировано проектов: ${mergeResult.addedProjects}; ` +
+      `credentials: ${mergeResult.addedCredentials}.`,
+  );
+}
+
+/**
  * Диалог проекта.
  */
 /**
@@ -675,6 +866,31 @@ elements.credentialForm.addEventListener("submit", async (event) => {
  */
 elements.addProjectButton.addEventListener("click", () => {
   openProjectDialog();
+});
+
+elements.exportCredentialsButton.addEventListener("click", () => {
+  try {
+    exportCredentials();
+  } catch (error) {
+    console.error("Credential export error:", error);
+    window.alert("Не удалось экспортировать credentials.");
+  }
+});
+
+elements.importCredentialsButton.addEventListener("click", () => {
+  elements.importCredentialsFile.click();
+});
+
+elements.importCredentialsFile.addEventListener("change", async () => {
+  const [file] = elements.importCredentialsFile.files;
+  elements.importCredentialsFile.value = "";
+
+  try {
+    await importCredentials(file);
+  } catch (error) {
+    console.error("Credential import error:", error);
+    window.alert(`Не удалось импортировать файл: ${error.message}`);
+  }
 });
 
 elements.lockButton.addEventListener("click", lockVault);

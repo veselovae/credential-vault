@@ -77,12 +77,35 @@
           />
 
           <button
+            id="importCredentialsButton"
+            class="button button-secondary"
+            type="button"
+          >
+            Импорт
+          </button>
+
+          <button
+            id="exportCredentialsButton"
+            class="button button-secondary"
+            type="button"
+          >
+            Экспорт
+          </button>
+
+          <button
             id="addProjectButton"
             class="button button-primary"
             type="button"
           >
             Добавить проект
           </button>
+
+          <input
+            id="importCredentialsFile"
+            class="hidden"
+            type="file"
+            accept=".json,application/json"
+          />
         </div>
 
         <div
